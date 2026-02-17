@@ -1,0 +1,18 @@
+# Virtual environment
+
+venv/
+
+# Python cache
+
+__pycache__/
+*.pyc
+
+# Qt / build artifacts
+*.log
+*.sqlite
+*.db
+
+# OS Junk
+
+.DS_Store
+Thumbs.db
