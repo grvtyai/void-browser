@@ -2,7 +2,7 @@ Void Browser
 
 Minimal Python browser for learning and experimenting. Main use: develop the browser and run a private offline TiddlyWiki.
 
-Getting Started with TiddlyWiki: Link
+Getting Started with TiddlyWiki: https://tiddlywiki.com/
 
 Quick Features:
 
