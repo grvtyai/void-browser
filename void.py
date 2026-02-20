@@ -56,14 +56,14 @@ class BrowserTab(QWebEngineView):
 
 # ---- Main Browser ----
 class Browser(QMainWindow):
-    def __init__(self, title="Mein Dark Browser"):
+    def __init__(self, title="Void"):
         super().__init__()
 
         self.setWindowTitle(title)
         self.resize(1200, 800)
 
         # Start Page
-        startpage_path = Path(__file__).parent / "startpage.html"
+        startpage_path = Path(__file__).parent.parent / "void-hub" / "index.html"
         self.home_url = QUrl.fromLocalFile(str(startpage_path))
 
 
