@@ -23,7 +23,6 @@ URL bar navigation – type a URL and press enter to visit.
 
 Download support – save files through the browser.
 
-Start page integration – opens your local TiddlyWiki as the default homepage.
 
 Planned Features:
 
