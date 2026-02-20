@@ -1,50 +1,29 @@
 Void Browser
 
-This is a minimal, personal browser project I built to learn Python and HTML basics. The main idea is to develop the browser itself and use it as a hub for a private TiddlyWiki.
+Minimal Python browser for learning and experimenting. Main use: develop the browser and run a private offline TiddlyWiki.
 
-You can check out TiddlyWiki's Getting Started guide if you want to see how to create and manage your own wiki.
+Getting Started with TiddlyWiki: Link
 
-The browser is fully downloadable – feel free to grab it, tweak it, and adjust it to your own needs. 
-Think of it as a personal playground for Python, WebEngine, and offline wiki experimentation.
+Quick Features:
 
-Current Features:
+Tabbed browsing, back/forward, close tabs
 
-Tabbed browsing – open multiple tabs, close them, navigate back/forward.
+Tracker blocker (Google Analytics, DoubleClick, etc.)
 
-Custom tracker blocker – blocks common trackers like Google Analytics, DoubleClick, Facebook, etc.
+Persistent cookies & cache (keeps login sessions)
 
-Persistent cookies and disk cache – keeps your session info (like logged-in accounts) across restarts.
+Frameless dark UI with custom toolbar & window buttons
 
-Frameless, dark-themed UI – simple, clean, and easy on the eyes.
+URL bar navigation & downloads
 
-Custom title bar with window controls – minimize, maximize, close, and basic navigation buttons.
+Start page = your local TiddlyWiki
 
-URL bar navigation – type a URL and press enter to visit.
-
-Download support – save files through the browser.
-
-Start page integration – opens your local TiddlyWiki as the default homepage.
-
-Tip: once you have your TiddlyWiki index.html, you can point the browser to it by editing this line in void.py:
+Tip: After downloading your TiddlyWiki index.html, point the browser to it by editing in void.py:
 
 startpage_path = Path(__file__).parent.parent / "void-hub" / "index.html"
 
-Adjust the path however your folder structure is set up – the example above matches my setup, not yours.
+Adjust the path to match your folder structure.
 
-Planned Features:
+Next steps: finer privacy controls, smoother TiddlyWiki saving, tab management, and more personalization.
 
-Enhanced privacy options – fine-grained control over JavaScript, third-party cookies, and requests.
-
-Improved auto-save for TiddlyWiki – making edits seamless without manually replacing files.
-
-Optional extensions / customization – let users add more functionality for their personal needs.
-
-Better tab management – like pinning, reordering, or restoring sessions.
-
-Smoother drag-and-drop UI tweaks – improve the window and toolbar handling.
-
-
-
-This project is very much a personal and experimental tool, but anyone curious about Python GUI development or offline wikis can explore, hack, and expand it.
-
--grvty
+Open & hackable: Download, tweak, and make it yours.
