@@ -23,6 +23,13 @@ URL bar navigation – type a URL and press enter to visit.
 
 Download support – save files through the browser.
 
+Start page integration – opens your local TiddlyWiki as the default homepage.
+
+Tip: once you have your TiddlyWiki index.html, you can point the browser to it by editing this line in void.py:
+
+startpage_path = Path(__file__).parent.parent / "void-hub" / "index.html"
+
+Adjust the path however your folder structure is set up – the example above matches the setup in this repo.
 
 Planned Features:
 
