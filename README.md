@@ -29,7 +29,7 @@ Tip: once you have your TiddlyWiki index.html, you can point the browser to it b
 
 startpage_path = Path(__file__).parent.parent / "void-hub" / "index.html"
 
-Adjust the path however your folder structure is set up – the example above matches the setup in this repo.
+Adjust the path however your folder structure is set up – the example above matches my setup, not yours.
 
 Planned Features:
 
