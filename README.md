@@ -7,7 +7,6 @@ Crafted for learning, privacy, and a seamless local wiki experience.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-8a2be2?style=flat-square&logo=python&logoColor=white)
 ![PySide6](https://img.shields.io/badge/PySide6-Qt6-5a3a7a?style=flat-square&logo=qt&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-c8a8e8?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-Linux-0a0a14?style=flat-square&logo=linux&logoColor=white)
 
 </div>
