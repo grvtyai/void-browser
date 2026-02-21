@@ -141,4 +141,4 @@ Void is designed to be modified. Every component is self-contained:
 
 ## 📄 License
 
-MIT — download it, break it, make it yours.
+Personal Project - open to explore and learn from.
