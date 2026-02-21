@@ -1,0 +1,9 @@
+{
+  "sidebar_width": 200,
+  "engine": "https://google.com/search?q=",
+  "homepage": "void",
+  "homepage_url": "",
+  "tracker": true,
+  "dnt": false,
+  "auto_collapse": true
+}

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Void</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg:        #080810;
+    --bg2:       #0d0d1a;
+    --bg3:       #12101e;
+    --surface:   #1a1628;
+    --purple-d:  #2a1f3d;
+    --purple-m:  #5a3a7a;
+    --purple-l:  #7a4aaa;
+    --accent:    #9060c0;
+    --highlight: #c8a8e8;
+    --text:      #c8a8e8;
+    --text-dim:  #6a5080;
+    --white-ish: #e8d0f8;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content:'';
+    position:fixed; top:-30%; left:50%; transform:translateX(-50%);
+    width:700px; height:700px;
+    background:radial-gradient(circle,rgba(90,58,122,0.18) 0%,rgba(42,31,61,0.08) 50%,transparent 70%);
+    pointer-events:none; z-index:0;
+  }
+
+  .page {
+    position:relative; z-index:1;
+    display:flex; flex-direction:column; align-items:center;
+    min-height:100vh; padding:48px 24px 80px;
+  }
+
+  .gear-btn {
+    position:fixed; top:18px; right:18px;
+    width:36px; height:36px;
+    background:none; border:1px solid var(--purple-d);
+    border-radius:8px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-dim); transition:all 0.2s; z-index:100;
+  }
+  .gear-btn:hover { border-color:var(--purple-l); color:var(--highlight); background:var(--purple-d); }
+  .gear-btn svg { width:18px; height:18px; }
+
+  .clock {
+    font-family:'Space Mono',monospace; font-size:72px; font-weight:700;
+    color:#f0e8ff;
+    letter-spacing:-2px;
+    text-shadow:
+      0 0 20px rgba(240,232,255,0.9),
+      0 0 40px rgba(200,168,232,0.6),
+      0 0 80px rgba(122,74,170,0.4);
+    margin-bottom:4px; line-height:1;
+  }
+  .date {
+    font-size:14px; color:#c8a8e8; letter-spacing:3px;
+    text-transform:uppercase; margin-bottom:48px;
+    text-shadow: 0 0 12px rgba(200,168,232,0.4);
+  }
+
+  .search-wrap { width:100%; max-width:560px; position:relative; margin-bottom:64px; }
+  .search-wrap svg { position:absolute; left:16px; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; color:#c8a8e8; pointer-events:none;
+    filter: drop-shadow(0 0 6px rgba(200,168,232,0.6)); }
+  .search-input {
+    width:100%; background:#12101e; border:1px solid #5a3a7a;
+    border-radius:12px; padding:14px 16px 14px 46px;
+    font-family:'Outfit',sans-serif; font-size:15px; color:#f0e8ff; outline:none;
+    transition:border-color 0.2s,box-shadow 0.2s;
+    box-shadow: 0 0 12px rgba(90,58,122,0.2);
+  }
+  .search-input::placeholder { color:#7a4aaa; }
+  .search-input:focus {
+    border-color:#c8a8e8;
+    box-shadow:
+      0 0 0 2px rgba(200,168,232,0.15),
+      0 0 24px rgba(122,74,170,0.3);
+  }
+
+  .section-label {
+    font-size:11px; letter-spacing:3px; text-transform:uppercase;
+    color:#c8a8e8; margin-bottom:16px;
+    align-self:flex-start; max-width:700px; width:100%;
+    text-shadow: 0 0 10px rgba(200,168,232,0.5);
+  }
+
+  .sites-grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+    gap:12px; width:100%; max-width:700px; margin-bottom:48px;
+  }
+
+  .site-card {
+    background:var(--surface); border:1px solid var(--purple-d);
+    border-radius:12px; padding:16px 10px;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    cursor:pointer; text-decoration:none; color:var(--text);
+    transition:all 0.2s; position:relative; overflow:hidden;
+  }
+  .site-card::before {
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 0%,rgba(122,74,170,0.12),transparent 70%);
+    opacity:0; transition:opacity 0.2s;
+  }
+  .site-card:hover {
+    border-color:#c8a8e8;
+    transform:translateY(-2px);
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.4),
+      0 0 20px rgba(200,168,232,0.15);
+  }
+  .site-card:hover::before { opacity:1; }
+  .site-favicon { width:28px; height:28px; border-radius:6px; object-fit:contain; background:var(--purple-d); }
+  .site-favicon-placeholder {
+    width:28px; height:28px; border-radius:6px; background:var(--purple-d);
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px; color:var(--text-dim);
+  }
+  .site-name {
+    font-size:12px; color:#c8a8e8; text-align:center;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;
+    text-shadow: 0 0 8px rgba(200,168,232,0.4);
+  }
+  .site-delete {
+    position:absolute; top:4px; right:4px; width:18px; height:18px;
+    background:rgba(180,40,40,0.7); border:none; border-radius:4px;
+    color:white; font-size:10px; cursor:pointer; display:none;
+    align-items:center; justify-content:center;
+  }
+  .site-card:hover .site-delete { display:flex; }
+
+  .add-site {
+    background:transparent; border:1px dashed var(--purple-d); border-radius:12px;
+    padding:16px 10px; display:flex; flex-direction:column; align-items:center; gap:10px;
+    cursor:pointer; color:var(--text-dim); transition:all 0.2s;
+    font-family:'Outfit',sans-serif; font-size:12px;
+  }
+  .add-site:hover { border-color:var(--purple-l); color:var(--highlight); }
+  .add-site-icon {
+    width:28px; height:28px; border-radius:6px; background:var(--purple-d);
+    display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--text-dim);
+  }
+
+  /* ---- Modals ---- */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(8,8,16,0.85);
+    backdrop-filter:blur(4px); z-index:200;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity 0.2s;
+  }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal {
+    background:var(--bg3); border:1px solid var(--purple-d);
+    border-radius:16px; padding:32px; width:100%; max-width:460px;
+    box-shadow:0 24px 64px rgba(0,0,0,0.6); max-height:90vh; overflow-y:auto;
+  }
+  .modal h2 { font-size:18px; font-weight:600; color:var(--white-ish); margin-bottom:24px; display:flex; align-items:center; gap:10px; }
+  .modal label { display:block; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin-bottom:6px; margin-top:16px; }
+  .modal input, .modal select {
+    width:100%; background:var(--surface); border:1px solid var(--purple-d);
+    border-radius:8px; padding:10px 12px; font-family:'Outfit',sans-serif;
+    font-size:14px; color:var(--white-ish); outline:none; transition:border-color 0.2s;
+  }
+  .modal input:focus, .modal select:focus { border-color:var(--purple-l); }
+  .modal select option { background:var(--bg3); }
+
+  .modal-actions { display:flex; gap:10px; margin-top:24px; justify-content:flex-end; }
+  .btn { padding:9px 20px; border-radius:8px; font-family:'Outfit',sans-serif; font-size:14px; cursor:pointer; transition:all 0.2s; border:none; }
+  .btn-ghost { background:transparent; border:1px solid var(--purple-d); color:var(--text-dim); }
+  .btn-ghost:hover { border-color:var(--purple-l); color:var(--highlight); }
+  .btn-primary { background:var(--purple-l); color:var(--white-ish); }
+  .btn-primary:hover { background:var(--accent); }
+
+  .settings-section { border-top:1px solid var(--purple-d); margin-top:20px; padding-top:16px; }
+  .settings-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; gap:16px; }
+  .settings-row-label { font-size:14px; color:var(--text); }
+  .settings-row-sub { font-size:12px; color:var(--text-dim); margin-top:2px; }
+
+  .toggle { position:relative; width:40px; height:22px; flex-shrink:0; }
+  .toggle input { opacity:0; width:0; height:0; }
+  .toggle-slider { position:absolute; inset:0; background:var(--purple-d); border-radius:22px; cursor:pointer; transition:background 0.2s; }
+  .toggle-slider::before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:var(--text-dim); border-radius:50%; transition:transform 0.2s,background 0.2s; }
+  .toggle input:checked + .toggle-slider { background:var(--purple-l); }
+  .toggle input:checked + .toggle-slider::before { transform:translateX(18px); background:var(--white-ish); }
+
+  .slider-row { display:flex; align-items:center; gap:12px; margin-top:8px; }
+  input[type=range] {
+    flex:1; -webkit-appearance:none; height:4px;
+    background:var(--purple-d); border-radius:2px; outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none; width:16px; height:16px;
+    border-radius:50%; background:var(--purple-l); cursor:pointer;
+  }
+  .slider-val { font-size:13px; color:var(--highlight); min-width:40px; text-align:right; }
+
+  .bridge-status { font-size:11px; color:var(--text-dim); margin-top:8px; }
+  .bridge-status.connected { color:#7acc7a; }
+</style>
+</head>
+<body>
+
+<button class="gear-btn" onclick="openSettings()" title="Einstellungen">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+  </svg>
+</button>
+
+<div class="page">
+  <div class="clock" id="clock">00:00</div>
+  <div class="date" id="date">—</div>
+
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input class="search-input" id="searchInput" placeholder="Suchen oder URL eingeben…" autofocus>
+  </div>
+
+  <div class="section-label">Meist besucht</div>
+  <div class="sites-grid" id="sitesGrid"></div>
+</div>
+
+<!-- Modal: Seite hinzufügen -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <h2>Seite hinzufügen</h2>
+    <label>Name</label>
+    <input type="text" id="addName" placeholder="z.B. YouTube">
+    <label>URL</label>
+    <input type="text" id="addUrl" placeholder="https://youtube.com">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeAdd()">Abbrechen</button>
+      <button class="btn btn-primary" onclick="confirmAdd()">Hinzufügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Einstellungen -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal" style="max-width:500px;">
+    <h2>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+      Einstellungen
+    </h2>
+
+    <div id="bridgeStatus" class="bridge-status">⏳ Verbinde mit Browser...</div>
+
+    <!-- Allgemein -->
+    <div class="settings-section">
+      <div class="section-label" style="margin:0 0 8px;border:none;padding:0;">Allgemein</div>
+
+      <div class="settings-row">
+        <div><div class="settings-row-label">Suchmaschine</div></div>
+        <select id="s-engine" style="width:auto;">
+          <option value="https://google.com/search?q=">Google</option>
+          <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
+          <option value="https://search.brave.com/search?q=">Brave</option>
+          <option value="https://bing.com/search?q=">Bing</option>
+        </select>
+      </div>
+
+      <div class="settings-row">
+        <div><div class="settings-row-label">Homepage</div></div>
+        <select id="s-homepage" style="width:auto;" onchange="toggleHomepageUrl()">
+          <option value="void">Void Startseite</option>
+          <option value="custom">Eigene URL</option>
+        </select>
+      </div>
+      <input type="text" id="s-homepage-url" placeholder="https://..." style="display:none;margin-top:6px;">
+    </div>
+
+    <!-- Darstellung -->
+    <div class="settings-section">
+      <div class="section-label" style="margin:0 0 8px;border:none;padding:0;">Darstellung</div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Sidebar-Breite</div>
+          <div class="settings-row-sub">Breite der Tab-Leiste links</div>
+        </div>
+      </div>
+      <div class="slider-row">
+        <input type="range" id="s-sidebar" min="160" max="380" step="10" value="220"
+               oninput="document.getElementById('s-sidebar-val').textContent=this.value+'px'">
+        <span class="slider-val" id="s-sidebar-val">220px</span>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Sidebar automatisch einfahren</div>
+          <div class="settings-row-sub">Zeigt nur Favicons, öffnet bei Hover</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="s-autocollapse" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Datenschutz -->
+    <div class="settings-section">
+      <div class="section-label" style="margin:0 0 8px;border:none;padding:0;">Datenschutz</div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Tracker blockieren</div>
+          <div class="settings-row-sub">Bekannte Tracker-Domains blockieren</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="s-tracker" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Do Not Track</div>
+          <div class="settings-row-sub">DNT-Header senden</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="s-dnt">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeSettings()">Schließen</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- qwebchannel.js wird von Qt bereitgestellt -->
+<script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+<script>
+// ============================================================
+// BRIDGE SETUP
+// ============================================================
+let bridge = null;
+
+function initBridge() {
+  if (typeof QWebChannel === 'undefined') {
+    document.getElementById('bridgeStatus').textContent = '⚠ QWebChannel nicht verfügbar';
+    return;
+  }
+  new QWebChannel(qt.webChannelTransport, function(channel) {
+    bridge = channel.objects.bridge;
+    // Einstellungen von Python laden
+    bridge.getSettings(function(json) {
+      const s = JSON.parse(json);
+      applySettingsToUI(s);
+      // Auch für die Suche
+      currentEngine = s.engine || "https://google.com/search?q=";
+    });
+    document.getElementById('bridgeStatus').textContent = '✓ Verbunden';
+    document.getElementById('bridgeStatus').classList.add('connected');
+  });
+}
+
+// Fallback localStorage für Seiten die keine Bridge haben
+const DEFAULTS = {
+  sites: [
+    { name:"Blackhole", url:"../../blackhole/index.html" },
+    { name:"YouTube",   url:"https://youtube.com" },
+    { name:"GitHub",    url:"https://github.com" },
+    { name:"Google",    url:"https://google.com" },
+    { name:"Reddit",    url:"https://reddit.com" },
+  ],
+  engine: "https://google.com/search?q=",
+};
+
+function loadLocal() {
+  try { return JSON.parse(localStorage.getItem('voidSettings')) || DEFAULTS; }
+  catch { return DEFAULTS; }
+}
+function saveLocal(data) {
+  localStorage.setItem('voidSettings', JSON.stringify(data));
+}
+
+let localSettings = loadLocal();
+let currentEngine = localSettings.engine || DEFAULTS.engine;
+
+function applySettingsToUI(s) {
+  if (s.engine)        document.getElementById('s-engine').value = s.engine;
+  if (s.sidebar_width) {
+    document.getElementById('s-sidebar').value = s.sidebar_width;
+    document.getElementById('s-sidebar-val').textContent = s.sidebar_width + 'px';
+  }
+  if (s.tracker !== undefined) document.getElementById('s-tracker').checked = s.tracker;
+  if (s.dnt !== undefined)     document.getElementById('s-dnt').checked = s.dnt;
+  if (s.auto_collapse !== undefined) document.getElementById('s-autocollapse').checked = s.auto_collapse;
+  if (s.homepage)      document.getElementById('s-homepage').value = s.homepage;
+  if (s.homepage_url)  document.getElementById('s-homepage-url').value = s.homepage_url;
+  toggleHomepageUrl();
+  if (s.engine) currentEngine = s.engine;
+}
+
+// Bridge initialisieren sobald Seite geladen
+window.addEventListener('load', () => {
+  updateClock();
+  renderSites();
+  initBridge();
+});
+
+// ============================================================
+// UHR
+// ============================================================
+function updateClock() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${hh}:${mm}`;
+  const days = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const months = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  const d = now;
+  document.getElementById('date').textContent =
+    `${days[d.getDay()]}, ${d.getDate()}. ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+setInterval(updateClock, 10000);
+
+// ============================================================
+// SUCHE
+// ============================================================
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const val = e.target.value.trim();
+  if (!val) return;
+  const isUrl = /^https?:\/\//.test(val) || /^file:\/\//.test(val) || /^[\w-]+\.\w{2,}/.test(val);
+  window.location.href = isUrl
+    ? (val.startsWith('http') ? val : 'https://' + val)
+    : currentEngine + encodeURIComponent(val);
+});
+
+// ============================================================
+// MEIST BESUCHT
+// ============================================================
+function getFavicon(url) {
+  try {
+    const domain = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  } catch { return null; }
+}
+
+function renderSites() {
+  const grid = document.getElementById('sitesGrid');
+  grid.innerHTML = '';
+  localSettings.sites.forEach((site, i) => {
+    const card = document.createElement('a');
+    card.className = 'site-card';
+    card.href = site.url;
+    const fav = getFavicon(site.url);
+    card.innerHTML = `
+      ${fav ? `<img class="site-favicon" src="${fav}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+               <div class="site-favicon-placeholder" style="display:none">${site.name[0]}</div>`
+             : `<div class="site-favicon-placeholder">${site.name[0]}</div>`}
+      <span class="site-name">${site.name}</span>
+      <button class="site-delete" onclick="deleteSite(event,${i})">✕</button>
+    `;
+    grid.appendChild(card);
+  });
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-site';
+  addBtn.onclick = openAdd;
+  addBtn.innerHTML = `<div class="add-site-icon">+</div><span>Hinzufügen</span>`;
+  grid.appendChild(addBtn);
+}
+
+function deleteSite(e, i) {
+  e.preventDefault(); e.stopPropagation();
+  localSettings.sites.splice(i, 1);
+  saveLocal(localSettings);
+  renderSites();
+}
+
+// ============================================================
+// MODAL: SEITE HINZUFÜGEN
+// ============================================================
+function openAdd() {
+  document.getElementById('addName').value = '';
+  document.getElementById('addUrl').value = '';
+  document.getElementById('addModal').classList.add('open');
+  setTimeout(() => document.getElementById('addName').focus(), 100);
+}
+function closeAdd() { document.getElementById('addModal').classList.remove('open'); }
+function confirmAdd() {
+  const name = document.getElementById('addName').value.trim();
+  const url  = document.getElementById('addUrl').value.trim();
+  if (!name || !url) return;
+
+  // Lokale Pfade (../ oder /) über Bridge auflösen
+  if (bridge && (url.startsWith('../') || url.startsWith('./') || url.startsWith('/'))) {
+    bridge.resolveLocalPath(url, function(absoluteUrl) {
+      localSettings.sites.push({ name, url: absoluteUrl });
+      saveLocal(localSettings);
+      renderSites();
+      closeAdd();
+    });
+  } else {
+    const fullUrl = url.startsWith('http') || url.startsWith('file://') ? url : 'https://'+url;
+    localSettings.sites.push({ name, url: fullUrl });
+    saveLocal(localSettings);
+    renderSites();
+    closeAdd();
+  }
+}
+document.getElementById('addUrl').addEventListener('keydown', e => { if(e.key==='Enter') confirmAdd(); });
+
+// ============================================================
+// MODAL: EINSTELLUNGEN
+// ============================================================
+function openSettings() {
+  document.getElementById('settingsModal').classList.add('open');
+  if (bridge) {
+    bridge.getSettings(function(json) {
+      applySettingsToUI(JSON.parse(json));
+    });
+  }
+}
+function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
+
+function toggleHomepageUrl() {
+  const show = document.getElementById('s-homepage').value === 'custom';
+  document.getElementById('s-homepage-url').style.display = show ? 'block' : 'none';
+}
+
+function saveSettings() {
+  const engine      = document.getElementById('s-engine').value;
+  const sidebarW    = parseInt(document.getElementById('s-sidebar').value);
+  const tracker     = document.getElementById('s-tracker').checked;
+  const dnt         = document.getElementById('s-dnt').checked;
+  const autoCollapse = document.getElementById('s-autocollapse').checked;
+  const homepage    = document.getElementById('s-homepage').value;
+  const homepageUrl = document.getElementById('s-homepage-url').value.trim();
+
+  currentEngine = engine;
+
+  if (bridge) {
+    // Alles über die Bridge an Python schicken
+    bridge.setSidebarWidth(sidebarW);
+    bridge.setEngine(engine);
+    bridge.setTracker(tracker);
+    bridge.setDnt(dnt);
+    bridge.setAutoCollapse(autoCollapse);
+    bridge.setHomepage(homepage, homepageUrl);
+  }
+
+  // Auch lokal speichern als Fallback
+  localSettings.engine = engine;
+  saveLocal(localSettings);
+
+  closeSettings();
+  showToast('Einstellungen gespeichert ✓');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if(e.target===el) el.classList.remove('open'); });
+});
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--purple-l);color:var(--white-ish);padding:10px 20px;
+    border-radius:8px;font-size:13px;z-index:999;opacity:1;transition:opacity 0.4s;`;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(),400); }, 2000);
+}
+</script>
+</body>
+</html>
